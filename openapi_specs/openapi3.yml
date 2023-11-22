@@ -25,6 +25,24 @@ paths:
                   message:
                     type: string
                     example: 'Database populated.'
+  /v4/createdb:
+    get:
+      tags:
+        - db-init
+      summary: Creates and populates the database with dummy data
+      description: Creates and populates the database with dummy data
+      operationId: api_views.main.populate_db_v4
+      responses:
+        '200':
+          description: Creates and populates the database with dummy data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Database populated.'
   /:
     get:
       tags:
@@ -161,12 +179,31 @@ paths:
             schema:
               type: object
               properties:
-                username:
-                  type: string
-                  example: 'John.Doe'
                 password:
+                  example: password123
                   type: string
-                  example: 'password123'
+                temp:
+                  properties:
+                    password1:
+                      example: password123
+                      type: string
+                    username1:
+                      example: John.Doe
+                      type: string
+                    temp2:
+                      properties:
+                        password2:
+                          example: password123
+                          type: string
+                        username2:
+                          example: John.Doe
+                          type: string
+                      type: object
+                  type: object
+                username:
+                  example: John.Doe
+                  type: string
+              type: object
         required: true
       responses:
         '200':

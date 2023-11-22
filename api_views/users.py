@@ -24,10 +24,19 @@ def debug():
 
 
 def get_by_username(username):
+    temp_header = request.headers.get("Accept", "")
     if User.get_user(username):
+        if temp_header.lower() == "application/xml":
+            val = str(User.get_user(username))
+            txt = f'<?xml version="1.0" encoding="UTF-8"?><test>{val}</test>'
+            return Response(txt, 200, mimetype="application/xml")
         return Response(str(User.get_user(username)), 200, mimetype="application/json")
     else:
-        return Response(error_message_helper("User not found"), 404, mimetype="application/json")
+        if temp_header.lower() == "application/xml":
+            txt = f'<?xml version="1.0" encoding="UTF-8"?><test>user not found</test>'
+            return Response(txt, 404, mimetype="application/xml")
+
+        return Response(error_message_helper(f"User not found: stacktrace:",), 404, mimetype="application/json")
 
 
 def register_user():
@@ -90,7 +99,7 @@ def login_user():
     except jsonschema.exceptions.ValidationError as exc:
         return Response(error_message_helper(exc.message), 400, mimetype="application/json")
     except:
-        return Response(error_message_helper("An error occurred!"), 200, mimetype="application/json")
+        return Response(error_message_helper("An error occurred!: stacktrace: test"), 200, mimetype="application/json")
 
 
 def token_validator(auth_header):
@@ -118,7 +127,7 @@ def update_email(username):
     if "expired" in resp:
         return Response(error_message_helper(resp), 401, mimetype="application/json")
     elif "Invalid token" in resp:
-        return Response(error_message_helper(resp), 401, mimetype="application/json")
+        return Response(error_message_helper(resp + ", stacktrace: error2"), 401, mimetype="application/json")
     else:
         user = User.query.filter_by(username=resp).first()
         if vuln:  # Regex DoS
@@ -162,7 +171,7 @@ def update_password(username):
     if "expired" in resp:
         return Response(error_message_helper(resp), 401, mimetype="application/json")
     elif "Invalid token" in resp:
-        return Response(error_message_helper(resp), 401, mimetype="application/json")
+        return Response(error_message_helper(resp + ", stacktrace: error"), 401, mimetype="application/json")
     else:
         if request_data.get('password'):
             if vuln:  # Unauthorized update of password of another user
@@ -192,7 +201,7 @@ def delete_user(username):
     if "expired" in resp:
         return Response(error_message_helper(resp), 401, mimetype="application/json")
     elif "Invalid token" in resp:
-        return Response(error_message_helper(resp), 401, mimetype="application/json")
+        return Response(error_message_helper(resp + ", stacktrace: error3"), 401, mimetype="application/json")
     else:
         user = User.query.filter_by(username=resp).first()
         if user.admin:
