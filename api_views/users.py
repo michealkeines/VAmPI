@@ -41,6 +41,11 @@ def get_by_username(username):
 
 def register_user():
     request_data = request.get_json()
+    valid = ["email", "username", "password", "admin"]
+    for key in request_data.keys():
+        if key not in valid:
+            return Response(error_message_helper("invalid data"), 400, mimetype="application/json")
+
     # check if user already exists
     user = User.query.filter_by(username=request_data.get('username')).first()
     if not user:
