@@ -14,4 +14,8 @@ db = SQLAlchemy(vuln_app.app)
 
 vuln_app.add_api('openapi3.yml')
 
+@vuln_app.route('/anonymous')
+def tests():
+    return 'top secret', 200
+
 
